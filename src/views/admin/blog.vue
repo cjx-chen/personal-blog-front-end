@@ -78,7 +78,8 @@
                 <p class="articleContent">{{ value.articleContent }}</p>
                 <a-card-meta>
                   <template #description>
-                    <a-tag class="category" v-for="value in categoryList" color="blue">{{ value.categoryName }}</a-tag>
+                    <a-button size="small" style="margin-right: 5px;" :id="value.articleId" @click="gotoRewrite($event)">修改</a-button>
+                    <a-button danger size="small" :id="value.articleId" @click="handleDelete($event)">删除</a-button>
                   </template>
                 </a-card-meta>
               </a-card>
@@ -91,6 +92,17 @@
           <div class="detailContent">
             <div>{{ detail.articleContent }}</div>
           </div>
+        </a-modal>
+        <!-- 修改博客 -->
+        <a-modal class="rewrite-block" v-model:visible="rewritevisible" title="修改博客" width="90%" wrap-class-name="full-modal"
+          @ok="handleRewrite" okText="修改" cancelText="取消">
+         <span class="label">标题</span>
+          <a-textarea v-model:value="rewrite.articleTitle" :placeholder="rewrite.articleContent" auto-size />
+          <div style="margin: 24px 0" />
+          <span class="label">内容</span>
+          <a-textarea v-model:value="rewrite.articleContent" :placeholder="rewrite.articleTitle"
+            :auto-size="{ minRows: 3, maxRows: 14 }" />
+          <div style="margin: 24px 0" />
         </a-modal>
         <!-- 写博客 -->
         <div class="write-block" v-if='current == "write"'>
@@ -126,7 +138,7 @@
                 <p class="articleContent">{{ value.articleContent }}</p>
                 <a-card-meta>
                   <template #description>
-                    <a-tag class="tag" v-for="value in tags" color="blue">{{ value.tagName }}</a-tag>
+                    <a-button size="small" :id="value.articleId" @click="handleRecover($event)">恢复</a-button>
                   </template>
                 </a-card-meta>
               </a-card>
@@ -174,12 +186,18 @@
       const current = ref(['posted'])
       const collapsed = ref(false)
       const detailvisible = ref(false);
+      const rewritevisible = ref(false);
       const deletedvisible = ref(false);
       const visible = ref(false)
       const articleList = reactive([])
       const deletedList = reactive([])
       const categoryList = reactive([])
       const detail = reactive({
+        articleId: '',
+        articleTitle: '',
+        articleContent: ''
+      })
+      const rewrite = reactive({
         articleId: '',
         articleTitle: '',
         articleContent: ''
@@ -257,9 +275,58 @@
       }
 
       /**
+       * 修改博客弹窗
+       */
+      const gotoRewrite = e => {
+        rewritevisible.value = true
+        rewrite.articleId = e.currentTarget.id
+        axios.get(`/manage-api/v1/getArticle/${rewrite.articleId}`).then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            const Datas = res.data.data;
+            rewrite.articleTitle = Datas.articleTitle
+            rewrite.articleContent = Datas.articleContent
+          } else {
+            message.error('获取博客详情失败！')
+          }
+        })
+      }
+
+      /**
+       * 修改博客
+       */
+      const handleRewrite = () => {
+        if (rewrite.articleTitle.length !== 0 && rewrite.articleContent.length !== 0) {
+          const params = {
+            articleId: rewrite.articleId,
+            articleTitle: rewrite.articleTitle,
+            articleContent: rewrite.articleContent
+          }
+          axios.post('/manage-api/v1/changeArticle', params).then((res) => {
+            console.log(res.data)
+            const Datas = res.data
+            if (Datas.resultCode === 200) {
+              message.success('修改成功！')
+              getAllPostedBlogs()
+              rewrite.articleTitle.length = 0
+              rewrite.articleContent.length = 0
+            } else {
+              message.error('修改失败！')
+            }
+          })
+        } else {
+          message.warning('博客标题或内容不能为空！')
+        }
+        rewritevisible.value = false;
+      }
+
+      /**
        * 删除博客
        */
-      const handleDelete = () => {
+      const handleDelete = e => {
+        if(!detail.articleId) {
+          detail.articleId = e.currentTarget.id
+        }
         axios.post(`/manage-api/v1/deleteArticle?articleId=${detail.articleId}`).then((res) => {
           console.log(res.data)
           if (res.data.resultCode === 200) {
@@ -275,7 +342,10 @@
       /**
        * 恢复博客
        */
-      const handleRecover = () => {
+      const handleRecover = e => {
+        if (!deleted.articleId) {
+          deleted.articleId = e.currentTarget.id
+        }
         axios.post(`/manage-api/v1/recoverArticle?articleId=${deleted.articleId}`).then((res) => {
           console.log(res.data)
           if (res.data.resultCode === 200) {
@@ -411,22 +481,25 @@
         collapsed,
         visible,
         detailvisible,
+        rewritevisible,
         deletedvisible,
         articleList,
         deletedList,
-        categoryList,
         detail,
+        rewrite,
         write,
         deleted,
         ...toRefs(state),
         getAllPostedBlogs,
         getBlogDetail,
+        gotoRewrite,
         handleDelete,
         handleRecover,
         postBlog,
         handleChange,
         handleOk,
         handleCancel,
+        handleRewrite,
         getAllDeteledBlogs,
         getDeletedBlogDetail
       };
