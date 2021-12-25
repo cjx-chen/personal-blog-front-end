@@ -19,14 +19,6 @@
             首页
           </router-link>
         </a-menu-item>
-        <a-menu-item key="tag">
-          <template #icon>
-            <tags-outlined />
-          </template>
-          <router-link tag="li" to="tag">
-            标签
-          </router-link>
-        </a-menu-item>
         <a-menu-item key="category">
           <template #icon>
             <book-outlined />
@@ -58,10 +50,6 @@
             <div class="categoryNum">
               <span class="title">分类</span>
               <span class="num">10</span>
-            </div>
-            <div class="tagNum">
-              <span class="title">标签</span>
-              <span class="num">15</span>
             </div>
           </a-descriptions-item>
           <a-descriptions-item label="班级">周二下午 9-11 节</a-descriptions-item>

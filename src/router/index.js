@@ -12,12 +12,6 @@ const routes = [
     component: () => import('../views/user/index.vue')
   },
   {
-    path: '/tag',
-    name: 'UserTag',
-    // 按需加载
-    component: () => import('../views/user/tag.vue')
-  },
-  {
     path: '/category',
     name: 'UserCategory',
     component: () => import('../views/user/category.vue')
@@ -43,12 +37,6 @@ const routes = [
     name: 'AdminBlog',
     // 按需加载
     component: () => import('../views/admin/blog.vue')
-  },
-  {
-    path: '/admin/tag',
-    name: 'AdminTag',
-    // 按需加载
-    component: () => import('../views/admin/tag.vue')
   },
   {
     path: '/admin/category',

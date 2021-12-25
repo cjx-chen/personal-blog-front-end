@@ -19,14 +19,6 @@
             首页
           </router-link>
         </a-menu-item>
-        <a-menu-item key="tag">
-          <template #icon>
-            <tags-outlined />
-          </template>
-          <router-link tag="li" to="tag">
-            标签
-          </router-link>
-        </a-menu-item>
         <a-menu-item key="category">
           <template #icon>
             <book-outlined />

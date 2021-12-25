@@ -19,14 +19,6 @@
             首页
           </router-link>
         </a-menu-item>
-        <a-menu-item key="tag">
-          <template #icon>
-            <tags-outlined />
-          </template>
-          <router-link tag="li" to="tag">
-            标签
-          </router-link>
-        </a-menu-item>
         <a-menu-item key="category">
           <template #icon>
             <book-outlined />
@@ -45,7 +37,25 @@
         </a-menu-item>
       </a-menu>
     </a-layout-header>
-    <a-layout-content style="padding: 80px 50px 0 50px">
+    <!-- 轮播图 -->
+    <a-carousel autoplay>
+      <div class="item1">
+        <div>
+          <div class="carouselTitle">嘻嘻的妙妙屋</div>
+        </div>
+      </div>
+      <div class="item2">
+        <div>
+          <div class="carouselTitle">嘻嘻的妙妙屋</div>
+        </div>
+      </div>
+      <div class="item3">
+        <div>
+          <div class="carouselTitle">嘻嘻的妙妙屋</div>
+        </div>
+      </div>
+    </a-carousel>
+    <a-layout-content style="padding: 30px 50px 0 50px">
       <div :style="{ background: '#fff', padding: '24px', minHeight: '450px' }">
         <!-- 文章列表 -->
         <a-row class="articleRow" :data="articleList">
@@ -179,6 +189,39 @@
 
   .logo {
     display: flex;
+  }
+
+  .ant-carousel :deep(.slick-slide) {
+    text-align: center;
+    height: 526px;
+    line-height: 526px;
+    background: #364d79;
+    overflow: hidden;
+    margin-top: 60px;
+  }
+
+  .ant-carousel :deep(.slick-slide .carouselTitle) {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 300;
+    font-size: 4rem;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .item1 {
+    background: url(../../static/img/0.jpg) no-repeat;
+    background-size: 100% auto;
+  }
+
+  .item2 {
+    background: url(../../static/img/1.jpg) no-repeat;
+    background-size: 100% auto;
+  }
+
+  .item3 {
+    background: url(../../static/img/2.jpg) no-repeat;
+    background-size: 100% auto;
   }
 
   .articleCol {

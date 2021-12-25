@@ -19,14 +19,6 @@
             首页
           </router-link>
         </a-menu-item>
-        <a-menu-item key="tag">
-          <template #icon>
-            <tags-outlined />
-          </template>
-          <router-link tag="li" to="tag">
-            标签
-          </router-link>
-        </a-menu-item>
         <a-menu-item key="category">
           <template #icon>
             <book-outlined />
@@ -51,7 +43,7 @@
           <strong>{{ state.articleTitle }}</strong>
         </div>
         <div class="articleContent">
-          <p>{{ state.articleContent }}</p>
+          <div>{{ state.articleContent }}</div>
         </div>
       </div>
     </a-layout-content>
@@ -129,5 +121,9 @@
 
   .articleTitle strong {
     font-size: 1.5rem;
+  }
+
+  .articleContent {
+    white-space: pre-wrap;
   }
 </style>
