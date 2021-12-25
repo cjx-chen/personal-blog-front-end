@@ -85,10 +85,12 @@
             </a-col>
           </a-row>
         </div>
-        <!-- 博客详情 -->
-        <a-modal class="detail-block" v-model:visible="detailvisible" :title="detail.articleTitle" width="100%" wrap-class-name="full-modal"
-          @ok="handleDelete" okText="删除">
-          <p>{{ detail.articleContent }}</p>
+        <!-- 已发布博客详情 -->
+        <a-modal class="detail-block" v-model:visible="detailvisible" :title="detail.articleTitle" width="90%" wrap-class-name="full-modal"
+          @ok="handleDelete" okText="删除" cancelText="取消">
+          <div class="detailContent">
+            <div>{{ detail.articleContent }}</div>
+          </div>
         </a-modal>
         <!-- 写博客 -->
         <div class="write-block" v-if='current == "write"'>
@@ -118,7 +120,7 @@
             <a-col class="articleCol" :xs="{ span: 5, offset: 1 }" :lg="{ span: 7, offset: 1 }"
               v-for="value in deletedList">
               <a-card :title="value.articleTitle" style="width: 300px">
-                <template #extra><a href="#" :id="value.articleId" @click="gotoArticleDetail($event)">
+                <template #extra><a href="#" :id="value.articleId" @click="getDeletedBlogDetail($event)">
                     <arrow-right-outlined />
                   </a></template>
                 <p class="articleContent">{{ value.articleContent }}</p>
@@ -131,6 +133,13 @@
             </a-col>
           </a-row>
         </div>
+        <!-- 已删除博客详情 -->
+        <a-modal class="deleted-block" v-model:visible="deletedvisible" :title="deleted.articleTitle" width="90%" wrap-class-name="full-modal"
+          @ok="handleRecover" okText="恢复" cancelText="取消">
+          <div class="detailContent">
+            <div>{{ deleted.articleContent }}</div>
+          </div>
+        </a-modal>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
         Jessie ©2021 Created by 陈家禧 20191002876
@@ -165,11 +174,17 @@
       const current = ref(['posted'])
       const collapsed = ref(false)
       const detailvisible = ref(false);
+      const deletedvisible = ref(false);
       const visible = ref(false)
       const articleList = reactive([])
       const deletedList = reactive([])
       const categoryList = reactive([])
       const detail = reactive({
+        articleId: '',
+        articleTitle: '',
+        articleContent: ''
+      })
+      const deleted = reactive({
         articleId: '',
         articleTitle: '',
         articleContent: ''
@@ -223,6 +238,25 @@
       }
 
       /**
+       * 获取已删除博客详情
+       */
+      const getDeletedBlogDetail = e => {
+        console.log(e.currentTarget.id)
+        deletedvisible.value = true
+        deleted.articleId = e.currentTarget.id
+        axios.get(`/manage-api/v1/getArticle/${deleted.articleId}`).then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            const Datas = res.data.data;
+            deleted.articleTitle = Datas.articleTitle
+            deleted.articleContent = Datas.articleContent
+          } else {
+            message.error('获取博客详情失败！')
+          }
+        })
+      }
+
+      /**
        * 删除博客
        */
       const handleDelete = () => {
@@ -236,6 +270,22 @@
           }
         })
         detailvisible.value = false;
+      }
+
+      /**
+       * 恢复博客
+       */
+      const handleRecover = () => {
+        axios.post(`/manage-api/v1/recoverArticle?articleId=${deleted.articleId}`).then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            message.success('博客恢复成功！')
+            getAllDeteledBlogs()
+          } else {
+            message.error('博客恢复失败！')
+          }
+        })
+        deletedvisible.value = false;
       }
 
       /**
@@ -361,20 +411,24 @@
         collapsed,
         visible,
         detailvisible,
+        deletedvisible,
         articleList,
         deletedList,
         categoryList,
         detail,
         write,
+        deleted,
         ...toRefs(state),
         getAllPostedBlogs,
         getBlogDetail,
         handleDelete,
+        handleRecover,
         postBlog,
         handleChange,
         handleOk,
         handleCancel,
-        getAllDeteledBlogs
+        getAllDeteledBlogs,
+        getDeletedBlogDetail
       };
     }
   });
@@ -425,6 +479,10 @@
     top: 0;
     padding-bottom: 0;
     margin: 0;
+  }
+
+  .detailContent {
+    white-space: pre-wrap;
   }
 
   .detail-block {
