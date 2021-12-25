@@ -56,11 +56,11 @@
                   <arrow-right-outlined />
                 </a></template>
               <p class="articleContent">{{ value.articleContent }}</p>
-              <a-card-meta>
+              <!-- <a-card-meta>
                 <template #description>
                   <a-tag class="tag" v-for="value in tags" color="blue">{{ value.tagName }}</a-tag>
                 </template>
-              </a-card-meta>
+              </a-card-meta> -->
             </a-card>
           </a-col>
         </a-row>
@@ -186,6 +186,10 @@
 
   .articleRow {
     margin-top: 3rem;
+  }
+  
+  .ant-card {
+    height: 12rem !important;
   }
 
   .articleCol {

@@ -66,16 +66,16 @@
                   <arrow-right-outlined />
                 </a></template>
               <p class="articleContent">{{ value.articleContent }}</p>
-              <a-card-meta>
+              <!-- <a-card-meta>
                 <template #description>
                   <a-tag class="tag" v-for="value in tags" color="blue">{{ value.tagName }}</a-tag>
                 </template>
-              </a-card-meta>
+              </a-card-meta> -->
             </a-card>
           </a-col>
         </a-row>
         <!-- 页码 -->
-        <a-pagination class="pagination" v-model:currentPage="currentPage" simple :total="50" />
+        <!-- <a-pagination class="pagination" v-model:currentPage="currentPage" simple :total="50" /> -->
       </div>
     </a-layout-content>
     <a-layout-footer style="text-align: center">
@@ -223,6 +223,10 @@
   .item3 {
     background: url(../../static/img/2.jpg) no-repeat;
     background-size: 100% auto;
+  }
+
+  .ant-card {
+    height: 12rem !important;
   }
 
   .articleCol {

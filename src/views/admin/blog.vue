@@ -535,6 +535,10 @@
     margin-top: -1.5rem;
   }
 
+  .ant-card {
+    height: 14rem !important;
+  }
+
   .articleCol {
     margin-top: 1rem;
   }
