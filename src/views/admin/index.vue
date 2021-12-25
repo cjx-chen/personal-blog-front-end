@@ -71,8 +71,7 @@
 
       return {
         selectedKeys: ref(['home']),
-        collapsed: ref(false),
-        getBlogs
+        collapsed: ref(false)
       };
     }
   });

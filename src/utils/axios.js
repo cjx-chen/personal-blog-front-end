@@ -11,8 +11,8 @@ axios.defaults.baseURL = config[import.meta.env.MODE].baseUrl
 // axios.defaults.headers['X-Requested-With'] = 'XMLHttpRequest'
 // axios.defaults.headers['token'] = localGet('token') || ''
 
-// 默认 post 请求，使用 multipart/form-data 形式
-axios.defaults.headers.post["Content-Type"] = "multipart/form-data;charset=UTF-8";
+// 默认 post 请求，使用 application/json 形式
+axios.defaults.headers.post["Content-Type"] = "application/json;charset=UTF-8";
 
 // 请求拦截器，内部根据返回值，重新组装，统一管理。
 axios.interceptors.response.use(res => {

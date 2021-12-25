@@ -68,7 +68,7 @@
   import { HomeOutlined, TagsOutlined, BookOutlined, UserOutlined, MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue';
 
   export default defineComponent({
-    name: 'AdminHome',
+    name: 'AdminAbout',
     components: {
       HomeOutlined,
       TagsOutlined,

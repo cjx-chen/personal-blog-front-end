@@ -120,6 +120,7 @@
        * 获取博客列表
        */
       const getBlogs = () => {
+        articleList.length = 0
         axios.get('/api/v1/getArticles').then((res) => {
           // message.success('请求成功！');
           console.log(res.data.data)
