@@ -72,7 +72,7 @@
             <a-col class="articleCol" :xs="{ span: 5, offset: 1 }" :lg="{ span: 7, offset: 1 }"
               v-for="value in articleList">
               <a-card :title="value.articleTitle" style="width: 300px">
-                <template #extra><a href="#" :id="value.articleId" @click="gotoArticleDetail($event)">
+                <template #extra><a href="#" :id="value.articleId" @click="getBlogDetail($event)">
                     <arrow-right-outlined />
                   </a></template>
                 <p class="articleContent">{{ value.articleContent }}</p>
@@ -85,6 +85,11 @@
             </a-col>
           </a-row>
         </div>
+        <!-- 博客详情 -->
+        <a-modal class="detail-block" v-model:visible="detailvisible" :title="detail.articleTitle" width="100%" wrap-class-name="full-modal"
+          @ok="handleDelete" okText="删除">
+          <p>{{ detail.articleContent }}</p>
+        </a-modal>
         <!-- 写博客 -->
         <div class="write-block" v-if='current == "write"'>
           <span class="label">标题</span>
@@ -156,10 +161,19 @@
       ArrowRightOutlined
     },
     setup() {
-      const visible = ref(false);
+      const selectedKeys = ref(['blog'])
+      const current = ref(['posted'])
+      const collapsed = ref(false)
+      const detailvisible = ref(false);
+      const visible = ref(false)
       const articleList = reactive([])
       const deletedList = reactive([])
       const categoryList = reactive([])
+      const detail = reactive({
+        articleId: '',
+        articleTitle: '',
+        articleContent: ''
+      })
       const write = reactive({
         articleId: '',
         articleTitle: '',
@@ -187,6 +201,41 @@
             message.error('获取已发布的博客列表失败！')
           }
         })
+      }
+
+      /**
+       * 获取博客详情
+       */
+      const getBlogDetail = e => {
+        console.log(e.currentTarget.id)
+        detailvisible.value = true
+        detail.articleId = e.currentTarget.id
+        axios.get(`/manage-api/v1/getArticle/${detail.articleId}`).then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            const Datas = res.data.data;
+            detail.articleTitle = Datas.articleTitle
+            detail.articleContent = Datas.articleContent
+          } else {
+            message.error('获取博客详情失败！')
+          }
+        })
+      }
+
+      /**
+       * 删除博客
+       */
+      const handleDelete = () => {
+        axios.post(`/manage-api/v1/deleteArticle?articleId=${detail.articleId}`).then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            message.success('博客删除成功！')
+            getAllPostedBlogs()
+          } else {
+            message.error('博客删除失败！')
+          }
+        })
+        detailvisible.value = false;
       }
 
       /**
@@ -307,16 +356,20 @@
       })
 
       return {
-        selectedKeys: ref(['blog']),
-        current: ref(['posted']),
-        collapsed: ref(false),
+        selectedKeys,
+        current,
+        collapsed,
         visible,
+        detailvisible,
         articleList,
         deletedList,
         categoryList,
+        detail,
         write,
         ...toRefs(state),
         getAllPostedBlogs,
+        getBlogDetail,
+        handleDelete,
         postBlog,
         handleChange,
         handleOk,
@@ -365,6 +418,27 @@
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+  }
+
+  .full-modal .ant-modal {
+    max-width: 100%;
+    top: 0;
+    padding-bottom: 0;
+    margin: 0;
+  }
+
+  .detail-block {
+    height: 100vh;
+  }
+
+  .full-modal .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh);
+  }
+  
+  .full-modal .ant-modal-body {
+    flex: 1;
   }
 
   .modalSubTitle {

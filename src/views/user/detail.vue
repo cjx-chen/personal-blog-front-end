@@ -79,16 +79,23 @@
         articleContent: ''
       })
 
+      /**
+       * 获取文章详情
+       */
       const getArticleById = () => {
         const articleId = state.articleId
         console.log(state.articleId)
         axios.get(`/api/v1/getArticle/${articleId}`).then((res) => {
-          // message.success('请求成功！');
           console.log(res.data)
-          const Datas = res.data.data;
-          state.articleTitle = Datas.articleTitle
-          state.articleContent = Datas.articleContent
-          // console.log('state.articleTitle', state.articleTitle)
+          if (res.data.resultCode === 200) {
+            // message.success('请求成功！')
+            const Datas = res.data.data;
+            state.articleTitle = Datas.articleTitle
+            state.articleContent = Datas.articleContent
+            // console.log('state.articleTitle', state.articleTitle)
+          } else {
+            message.error('获取博客详情失败！')
+          }
         })
       }
 
