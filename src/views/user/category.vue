@@ -48,6 +48,7 @@
             @click="getBlogs($event)">{{ value.categoryName }}</a-button>
         </div>
         <!-- 文章列表 -->
+        <div class="msg" v-if="articleList.length == 0">该分类栏目是空的~</div>
         <a-row v-if="articleList" class="articleRow" :data="articleList">
           <a-col class="articleCol" :xs="{ span: 5, offset: 1 }" :lg="{ span: 7, offset: 1 }"
             v-for="value in articleList">
@@ -100,11 +101,15 @@
        */
       const getCategories = () => {
         axios.get('/api/v1/getCategories').then((res) => {
-          // message.success('请求成功！');
-          console.log(res.data.data)
-          const Datas = res.data.data;
-          for (let i = 0; i < Datas.length; i++) {
-            categories.push(Datas[i])
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            // message.success('请求成功！')
+            const Datas = res.data.data;
+            for (let i = 0; i < Datas.length; i++) {
+              categories.push(Datas[i])
+            }
+          } else {
+            message.error('获取某博客所属分类失败！')
           }
         })
       }
@@ -120,11 +125,15 @@
         articleList.length = 0
         // 获取文章列表
         axios.get(`/api/v1/getPartArticles?cId=${cId}`).then((res) => {
-          // message.success('请求成功！');
           console.log(res.data)
-          const Datas = res.data.data;
-          for (let i = 0; i < Datas.length; i++) {
-            articleList.push(Datas[i])
+          if (res.data.resultCode === 200) {
+            // message.success('请求成功！');
+            const Datas = res.data.data;
+            for (let i = 0; i < Datas.length; i++) {
+              articleList.push(Datas[i])
+            }
+          } else {
+            message.error('获取博客列表失败！')
           }
         })
       }
@@ -187,7 +196,7 @@
   .articleRow {
     margin-top: 3rem;
   }
-  
+
   .ant-card {
     height: 12rem !important;
   }
@@ -202,5 +211,11 @@
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
+  }
+
+  .msg {
+    margin-top: 3rem;
+    text-align: center;
+    color: gray;
   }
 </style>

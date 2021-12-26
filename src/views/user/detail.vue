@@ -42,6 +42,9 @@
         <div class="articleTitle">
           <strong>{{ state.articleTitle }}</strong>
         </div>
+        <div class="articleCategories">
+          <a-tag class="category" v-for="value in state.articleCategories" color="blue">{{ value.categoryName }}</a-tag>
+        </div>
         <div class="articleContent">
           <div>{{ state.articleContent }}</div>
         </div>
@@ -76,7 +79,8 @@
       const state = reactive({
         articleId: 0,
         articleTitle: '',
-        articleContent: ''
+        articleContent: '',
+        articleCategories: []
       })
 
       /**
@@ -99,19 +103,42 @@
         })
       }
 
+      /**
+       * 获取文章所属分类栏目
+       */
+      const getArticleCategories = () => {
+        const articleId = state.articleId
+        // console.log(state.articleId)
+        state.articleCategories.length = 0
+        axios.get(`/api/v1/getArticleCategories?aId=${articleId}`).then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            // message.success('请求成功！')
+            const Datas = res.data.data;
+            for (let i = 0; i < Datas.length; i++) {
+              state.articleCategories.push(Datas[i])
+            }
+          } else {
+            message.error('获取文章所属分类栏目失败！')
+          }
+        })
+      }
+
       onMounted(() => {
         // console.log(route.query.articleid)
         const articleId = route.query.articleid
         // console.log(articleId)
         state.articleId = articleId
         getArticleById()
+        getArticleCategories()
       })
 
       return {
         current,
         route,
         state,
-        getArticleById
+        getArticleById,
+        getArticleCategories
       };
     }
   });
@@ -123,11 +150,15 @@
   }
 
   .articleTitle {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
   }
 
   .articleTitle strong {
     font-size: 1.5rem;
+  }
+
+  .articleCategories {
+    margin-bottom: 1rem;
   }
 
   .articleContent {

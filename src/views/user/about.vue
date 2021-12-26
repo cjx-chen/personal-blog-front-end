@@ -39,8 +39,8 @@
     </a-layout-header>
     <a-layout-content style="padding: 80px 50px 0 50px">
       <div :style="{ background: '#fff', padding: '24px', minHeight: '450px' }">
-        <a-descriptions title="博主信息">
-          <a-descriptions-item label="姓名">陈家禧</a-descriptions-item>
+        <a-descriptions title="博主信息" :data="user">
+          <a-descriptions-item label="姓名">{{ user.userName }}</a-descriptions-item>
           <br />
           <a-descriptions-item style="float: right;">
             <div class="articleNum">
@@ -52,11 +52,11 @@
               <span class="num">10</span>
             </div>
           </a-descriptions-item>
-          <a-descriptions-item label="班级">周二下午 9-11 节</a-descriptions-item>
+          <a-descriptions-item label="班级">{{ user.userClass }}</a-descriptions-item>
           <br />
           <br />
-          <a-descriptions-item label="地址">
-            广东外语外贸大学, 小谷围街道, 番禺区, 广州市, 广东省, 中国
+          <a-descriptions-item label="学校">
+            {{ user.userSchool }}
           </a-descriptions-item>
         </a-descriptions>
       </div>
@@ -68,8 +68,12 @@
 </template>
 
 <script>
-  import { defineComponent, ref } from 'vue';
+  import { defineComponent, ref, reactive, onMounted } from 'vue';
+  import { message } from 'ant-design-vue';
   import { HomeOutlined, TagsOutlined, BookOutlined, UserOutlined, ArrowRightOutlined } from '@ant-design/icons-vue';
+
+  import axios from '../../utils/axios'
+
   export default defineComponent({
     name: 'UserAbout',
     components: {
@@ -81,8 +85,39 @@
     },
     setup() {
       const current = ref(['about']);
+
+      const user = reactive({
+        userId: 1,
+        userName: '',
+        userClass: '',
+        userSchool: ''
+      })
+
+      /**
+       * 获取个人信息
+       */
+      const getUserInfo = () => {
+        axios.get(`/api/v1/getUserInfo/${user.userId}`).then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            const Datas = res.data.data;
+            user.userName = Datas.userName
+            user.userClass = Datas.userClass,
+              user.userSchool = Datas.userSchool
+          } else {
+            message.error('获取个人信息失败！')
+          }
+        })
+      }
+
+      onMounted(() => {
+        getUserInfo()
+      })
+
       return {
-        current
+        current,
+        user,
+        getUserInfo
       };
     }
   });

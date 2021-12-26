@@ -122,11 +122,15 @@
       const getBlogs = () => {
         articleList.length = 0
         axios.get('/api/v1/getArticles').then((res) => {
-          // message.success('请求成功！');
-          console.log(res.data.data)
-          const Datas = res.data.data;
-          for (let i = 0; i < Datas.length; i++) {
-            articleList.push(Datas[i])
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            // message.success('请求成功！')
+            const Datas = res.data.data;
+            for (let i = 0; i < Datas.length; i++) {
+              articleList.push(Datas[i])
+            }
+          } else {
+            message.error('获取博客列表失败！')
           }
         })
       }

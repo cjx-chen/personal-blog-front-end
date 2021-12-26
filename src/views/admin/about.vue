@@ -45,15 +45,15 @@
       <a-layout-content :style="{ margin: '24px 16px', padding: '24px', background: '#fff', minHeight: '475px' }">
         <div>
           <span class="label">姓名</span>
-          <a-textarea v-model:value="userName" placeholder="Autosize height based on content lines" auto-size />
+          <a-textarea v-model:value="user.userName" :placeholder="user.userName" auto-size />
           <div style="margin: 24px 0" />
           <span class="label">班级</span>
-          <a-textarea v-model:value="className" placeholder="Autosize height based on content lines" auto-size />
+          <a-textarea v-model:value="user.userClass" :placeholder="user.userClass" auto-size />
           <div style="margin: 24px 0" />
-          <span class="label">地址</span>
-          <a-textarea v-model:value="address" placeholder="Autosize height based on content lines" auto-size />
+          <span class="label">学校</span>
+          <a-textarea v-model:value="user.userSchool" :placeholder="user.userSchool" auto-size />
           <div style="margin: 24px 0" />
-          <a-button type="primary" block>修改</a-button>
+          <a-button type="primary" block @click="changeUserInfo">修改</a-button>
         </div>
       </a-layout-content>
       <a-layout-footer style="text-align: center">
@@ -64,8 +64,11 @@
 </template>
 
 <script>
-  import { defineComponent, ref, reactive } from 'vue';
+  import { defineComponent, ref, reactive, onMounted } from 'vue';
+  import { message } from 'ant-design-vue';
   import { HomeOutlined, TagsOutlined, BookOutlined, UserOutlined, MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue';
+
+  import axios from '../../utils/axios'
 
   export default defineComponent({
     name: 'AdminAbout',
@@ -78,11 +81,66 @@
       MenuFoldOutlined
     },
     setup() {
+      const user = reactive({
+        userId: 1,
+        userName: '',
+        userClass: '',
+        userSchool: ''
+      })
 
+      /**
+       * 获取个人信息
+       */
+      const getUserInfo = () => {
+        axios.get(`/manage-api/v1/getUserInfo/${user.userId}`).then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            const Datas = res.data.data;
+            user.userName = Datas.userName
+            user.userClass = Datas.userClass,
+              user.userSchool = Datas.userSchool
+          } else {
+            message.error('获取个人信息失败！')
+          }
+        })
+      }
+
+      /**
+       * 修改个人信息
+       */
+      const changeUserInfo = () => {
+        if (user.userName.length !== 0 && user.userClass.length !== 0 && user.userSchool.length !== 0) {
+          const params = {
+            userId: user.userId,
+            userName: user.userName,
+            userClass: user.userClass,
+            userSchool: user.userSchool
+          }
+          axios.post('/manage-api/v1/changeUserInfo', params).then((res) => {
+            console.log(res.data)
+            const Datas = res.data
+            if (Datas.resultCode === 200) {
+              message.success('修改成功！')
+              getUserInfo()
+            } else {
+              message.error('修改失败！')
+            }
+          })
+        } else {
+          message.warning('个人信息不能为空！')
+        }
+      }
+
+      onMounted(() => {
+        getUserInfo()
+      })
 
       return {
         selectedKeys: ref(['about']),
         collapsed: ref(false),
+        user,
+        getUserInfo,
+        changeUserInfo
       };
     }
   });
