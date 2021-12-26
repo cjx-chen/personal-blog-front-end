@@ -56,6 +56,9 @@
             <template v-if="column.key === 'categoryId'">
               {{ record.categoryId }}
             </template>
+            <template v-if="column.key === 'blogNum'">
+              {{ record.blogNum }}
+            </template>
             <template v-else-if="column.key === 'action'">
               <span>
                 <a-button size="small" :id="record.categoryId" @click="gotoChange($event)">修改</a-button>
@@ -115,6 +118,10 @@
         dataIndex: 'categoryName',
         key: 'categoryName',
       }, {
+        title: '博客数量',
+        dataIndex: 'blogNum',
+        key: 'blogNum',
+      }, {
         title: '操作',
         key: 'action',
       }];
@@ -147,7 +154,17 @@
             const Datas = res.data.data;
             for (let i = 0; i < Datas.length; i++) {
               list.data.push(Datas[i])
+              axios.get(`/manage-api/v1/getPartArticles?cId=${Datas[i].categoryId}`).then((res) => {
+                console.log(res.data)
+                if (res.data.resultCode === 200) {
+                  const ArticleList = res.data.data;
+                  list.data[i].blogNum = ArticleList.length
+                } else {
+                  message.error('获取分类包含文章数失败！')
+                }
+              })
             }
+            // console.log('list.data', list.data)
           } else {
             message.error('获取分类列表失败！')
           }

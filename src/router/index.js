@@ -6,6 +6,10 @@ const routes = [
     redirect: '/home'
   },
   {
+    path: '/admin/home',
+    redirect: '/admin/blog'
+  },
+  {
     path: '/home',
     name: 'UserHome',
     // 按需加载
@@ -25,12 +29,6 @@ const routes = [
     path: '/articleDetail',
     name: 'UserArticleDetail',
     component: () => import('../views/user/detail.vue')
-  },
-  {
-    path: '/admin/home',
-    name: 'AdminHome',
-    // 按需加载
-    component: () => import('../views/admin/index.vue')
   },
   {
     path: '/admin/blog',

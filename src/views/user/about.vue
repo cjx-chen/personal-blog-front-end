@@ -45,11 +45,11 @@
           <a-descriptions-item style="float: right;">
             <div class="articleNum">
               <span class="title">文章</span>
-              <span class="num">78</span>
+              <span class="num">{{ articleList.length }}</span>
             </div>
             <div class="categoryNum">
               <span class="title">分类</span>
-              <span class="num">10</span>
+              <span class="num">{{ categories.length }}</span>
             </div>
           </a-descriptions-item>
           <a-descriptions-item label="班级">{{ user.userClass }}</a-descriptions-item>
@@ -85,6 +85,8 @@
     },
     setup() {
       const current = ref(['about']);
+      const articleList = reactive([])
+      const categories = reactive([])
 
       const user = reactive({
         userId: 1,
@@ -110,14 +112,57 @@
         })
       }
 
+      /**
+       * 获取博客列表
+       */
+       const getBlogs = () => {
+        articleList.length = 0
+        axios.get('/api/v1/getArticles').then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            // message.success('请求成功！')
+            const Datas = res.data.data;
+            for (let i = 0; i < Datas.length; i++) {
+              articleList.push(Datas[i])
+            }
+          } else {
+            message.error('获取博客列表失败！')
+          }
+        })
+      }
+
+      /**
+       * 获取分类列表
+       */
+       const getCategories = () => {
+        axios.get('/api/v1/getCategories').then((res) => {
+          console.log(res.data)
+          if (res.data.resultCode === 200) {
+            // message.success('请求成功！')
+            const Datas = res.data.data;
+            for (let i = 0; i < Datas.length; i++) {
+              categories.push(Datas[i])
+            }
+          } else {
+            message.error('获取分类列表失败！')
+          }
+        })
+      }
+
       onMounted(() => {
         getUserInfo()
+        getBlogs()
+        getCategories()
       })
 
       return {
         current,
         user,
-        getUserInfo
+        articleList,
+        categories,
+        getUserInfo,
+        getBlogs,
+        getCategories
       };
     }
   });

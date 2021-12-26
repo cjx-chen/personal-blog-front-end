@@ -48,7 +48,7 @@
             @click="getBlogs($event)">{{ value.categoryName }}</a-button>
         </div>
         <!-- 文章列表 -->
-        <div class="msg" v-if="articleList.length == 0">该分类栏目是空的~</div>
+        <div class="msg" v-if="articleList.length == 0 && state.click">该分类栏目是空的~</div>
         <a-row v-if="articleList" class="articleRow" :data="articleList">
           <a-col class="articleCol" :xs="{ span: 5, offset: 1 }" :lg="{ span: 7, offset: 1 }"
             v-for="value in articleList">
@@ -94,10 +94,13 @@
       const current = ref(['category'])
       const categories = reactive([])
       const articleList = reactive([])
+      const state = reactive({
+        click: false
+      })
       const tags = reactive([])
 
       /**
-       * 获取某博客所属分类
+       * 获取分类列表
        */
       const getCategories = () => {
         axios.get('/api/v1/getCategories').then((res) => {
@@ -109,7 +112,7 @@
               categories.push(Datas[i])
             }
           } else {
-            message.error('获取某博客所属分类失败！')
+            message.error('获取分类列表失败！')
           }
         })
       }
@@ -118,6 +121,8 @@
        * 获取博客列表
        */
       const getBlogs = (val) => {
+        state.click = true
+        console.log('click', state.click)
         // 获取分类id
         console.log('cId', val.currentTarget.id)
         const cId = val.currentTarget.id
@@ -161,6 +166,7 @@
 
       return {
         current,
+        state,
         categories,
         articleList,
         getCategories,

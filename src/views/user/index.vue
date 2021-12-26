@@ -66,11 +66,11 @@
                   <arrow-right-outlined />
                 </a></template>
               <p class="articleContent">{{ value.articleContent }}</p>
-              <!-- <a-card-meta>
+              <a-card-meta>
                 <template #description>
-                  <a-tag class="tag" v-for="value in tags" color="blue">{{ value.tagName }}</a-tag>
+                  <a-tag class="tag" v-for="tag in value.tags" color="blue">{{ tag.categoryName }}</a-tag>
                 </template>
-              </a-card-meta> -->
+              </a-card-meta>
             </a-card>
           </a-col>
         </a-row>
@@ -105,16 +105,6 @@
       const current = ref(['home']);
       const currentPage = ref(1);
       const articleList = reactive([])
-      const tags = reactive([
-        {
-          tagid: 1,
-          tagName: 'Nodejs'
-        },
-        {
-          tagid: 2,
-          tagName: 'Apache'
-        }
-      ])
 
       /**
        * 获取博客列表
@@ -128,6 +118,19 @@
             const Datas = res.data.data;
             for (let i = 0; i < Datas.length; i++) {
               articleList.push(Datas[i])
+              axios.get(`/api/v1/getArticleCategories?aId=${Datas[i].articleId}`).then((res) => {
+                console.log(res.data)
+                if (res.data.resultCode === 200) {
+                  const Tags = res.data.data;
+                  articleList[i].tags = Tags
+                  // for (let j = 0; j < Tags.length; j++) {
+                  //   articleList[i].tags.push(Tags[j])
+                  // }
+                  console.log('articleList', articleList)
+                } else {
+                  message.error('获取博客分类栏目失败！')
+                }
+              })
             }
           } else {
             message.error('获取博客列表失败！')
@@ -160,7 +163,6 @@
         current,
         currentPage,
         articleList,
-        tags,
         ...methods,
         getBlogs,
       };
@@ -230,7 +232,7 @@
   }
 
   .ant-card {
-    height: 12rem !important;
+    height: 14rem !important;
   }
 
   .articleCol {

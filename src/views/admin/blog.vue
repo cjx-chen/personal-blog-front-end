@@ -376,8 +376,8 @@
               write.articleId = articleId
               getAllCategories()
               visible.value = true
-              write.articleTitle.length = 0
-              write.articleContent.length = 0
+              write.articleTitle = ''
+              write.articleContent = ''
             } else {
               message.error('发布博客失败！')
             }
